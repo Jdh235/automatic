@@ -469,7 +469,7 @@ class BDIA_DDIMScheduler(SchedulerMixin, ConfigMixin):
             if debug:
                 print("\n=== Initial DDIM Step ===")
             self.update_next_sample_BDIA(sample)
-            self.update_next_sample_BDIA(ddim_step)")
+            self.update_next_sample_BDIA(ddim_step)
         else:
             if debug:
                 print("\n=== BDIA Step ===")
@@ -513,14 +513,6 @@ class BDIA_DDIMScheduler(SchedulerMixin, ConfigMixin):
                     dtype=model_output.dtype
                 )
             prev_sample = prev_sample + std_dev_t * variance_noise
-            if debug:
-                print(f"After noise - Sample mean: {prev_sample.mean()}")
-
-        if debug:
-            print("\n=== Final Output ===")
-            print(f"Previous sample mean: {prev_sample.mean()}")
-            print(f"Predicted original sample mean: {pred_original_sample.mean()}")
-            print("====== End Debug Information ======\n")
 
         if not return_dict:
             return (prev_sample,)
