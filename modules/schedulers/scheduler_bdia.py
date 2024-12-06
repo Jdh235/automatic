@@ -369,6 +369,8 @@ class BDIA_DDIMScheduler(SchedulerMixin, ConfigMixin):
             return_dict (bool): Whether to return as DDIMSchedulerOutput or tuple
             debug (bool): Whether to print debug information
         """
+
+        debug=True
         if self.num_inference_steps is None:
             raise ValueError("Number of inference steps is 'None', run 'set_timesteps' first")
 
