@@ -407,13 +407,6 @@ class BDIA_DDIMScheduler(SchedulerMixin, ConfigMixin):
         variance = self._get_variance(timestep, prev_timestep)
         std_dev_t = eta * variance ** 0.5
 
-        if debug:
-            print("\n=== Alpha and Variance Values ===")
-            print(f"Alpha product t: {alpha_prod_t}")
-            print(f"Previous alpha product: {alpha_prod_t_prev}")
-            print(f"Variance: {variance}")
-            print(f"Standard deviation: {std_dev_t}")
-
         # Compute required values
         alpha_i = alpha_prod_t ** 0.5
         alpha_i_minus_1 = alpha_prod_t_prev ** 0.5
@@ -436,24 +429,18 @@ class BDIA_DDIMScheduler(SchedulerMixin, ConfigMixin):
             pred_epsilon = model_output
             if debug:
                 print("Using epsilon prediction")
-                print(f"Predicted original sample mean: {pred_original_sample.mean()}")
-                print(f"Predicted epsilon mean: {pred_epsilon.mean()}")
 
         elif self.config.prediction_type == "sample":
             pred_original_sample = model_output
             pred_epsilon = (sample - alpha_i * pred_original_sample) / sigma_i
             if debug:
                 print("Using direct sample prediction")
-                print(f"Predicted original sample mean: {pred_original_sample.mean()}")
-                print(f"Predicted epsilon mean: {pred_epsilon.mean()}")
 
         elif self.config.prediction_type == "v_prediction":
             pred_original_sample = alpha_i * sample - sigma_i * model_output
             pred_epsilon = alpha_i * model_output + sigma_i * sample
             if debug:
                 print("Using v-prediction")
-                print(f"Predicted original sample mean: {pred_original_sample.mean()}")
-                print(f"Predicted epsilon mean: {pred_epsilon.mean()}")
 
         else:
             raise ValueError(
@@ -462,48 +449,27 @@ class BDIA_DDIMScheduler(SchedulerMixin, ConfigMixin):
 
         # Apply thresholding or clipping if configured
         if self.config.thresholding:
-            if debug:
-                print("\n=== Applying Thresholding ===")
-                print(f"Before thresholding - Mean: {pred_original_sample.mean()}")
             pred_original_sample = self._threshold_sample(pred_original_sample)
-            if debug:
-                print(f"After thresholding - Mean: {pred_original_sample.mean()}")
 
         elif self.config.clip_sample:
-            if debug:
-                print("\n=== Applying Clipping ===")
-                print(f"Clip range: ±{self.config.clip_sample_range}")
-                print(f"Before clipping - Mean: {pred_original_sample.mean()}")
             pred_original_sample = pred_original_sample.clamp(
                 -self.config.clip_sample_range, self.config.clip_sample_range
             )
-            if debug:
-                print(f"After clipping - Mean: {pred_original_sample.mean()}")
 
         # Recompute pred_epsilon if using clipped model output
         if use_clipped_model_output:
-            if debug:
-                print("\n=== Recomputing Epsilon with Clipped Output ===")
-                print(f"Before recompute - Epsilon mean: {pred_epsilon.mean()}")
             pred_epsilon = (sample - alpha_i * pred_original_sample) / sigma_i
-            if debug:
-                print(f"After recompute - Epsilon mean: {pred_epsilon.mean()}")
 
         # Compute DDIM step
         ddim_step = alpha_i_minus_1 * pred_original_sample + sigma_i_minus_1 * pred_epsilon
 
-        if debug:
-            print("\n=== BDIA DDIM Step ===")
-            print(f"BDIA DDIM step mean: {ddim_step.mean()}")
 
         # Handle initial DDIM step or BDIA steps
         if len(self.next_sample) == 0:
             if debug:
                 print("\n=== Initial DDIM Step ===")
             self.update_next_sample_BDIA(sample)
-            self.update_next_sample_BDIA(ddim_step)
-            if debug:
-                print("Initialized next_sample buffer")
+            self.update_next_sample_BDIA(ddim_step)")
         else:
             if debug:
                 print("\n=== BDIA Step ===")
@@ -523,9 +489,6 @@ class BDIA_DDIMScheduler(SchedulerMixin, ConfigMixin):
                 ddim_step - 
                 (self.config.gamma * a)
             )
-            if debug:
-                print(f"Intermediate 'a' mean: {a.mean()}")
-                print(f"BDIA step mean: {bdia_step.mean()}")
             self.update_next_sample_BDIA(bdia_step)
 
         prev_sample = self.next_sample[-1]
