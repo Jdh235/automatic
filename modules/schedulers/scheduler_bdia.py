@@ -489,8 +489,8 @@ class BDIA_DDIMScheduler(SchedulerMixin, ConfigMixin):
         ddim_step = alpha_i_minus_1 * pred_original_sample + sigma_i_minus_1 * pred_epsilon
 
         if debug:
-            print("\n=== DDIM Step ===")
-            print(f"DDIM step mean: {ddim_step.mean()}")
+            print("\n=== BDIA DDIM Step ===")
+            print(f"BDIA DDIM step mean: {ddim_step.mean()}")
 
         # Handle initial DDIM step or BDIA steps
         if len(self.next_sample) == 0:
