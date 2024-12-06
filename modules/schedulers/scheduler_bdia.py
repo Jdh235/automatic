@@ -355,6 +355,8 @@ class BDIA_DDIMScheduler(SchedulerMixin, ConfigMixin):
         return_dict: bool = True,
         debug: bool = False,
     ) -> Union[DDIMSchedulerOutput, Tuple]:
+        
+        eta = 0.0
         """
         Predict the sample from the previous timestep by reversing the SDE.
         
