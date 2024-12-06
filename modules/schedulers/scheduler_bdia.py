@@ -198,7 +198,7 @@ class BDIA_DDIMScheduler(SchedulerMixin, ConfigMixin):
         sample_max_value: float = 1.0,
         timestep_spacing: str = "leading", #leading
         rescale_betas_zero_snr: bool = False,
-        gamma: float = 1.0,
+        gamma: float = 0.5,
 
     ):
         if trained_betas is not None:
@@ -355,6 +355,8 @@ class BDIA_DDIMScheduler(SchedulerMixin, ConfigMixin):
         return_dict: bool = True,
         debug: bool = False,
     ) -> Union[DDIMSchedulerOutput, Tuple]:
+        
+        debug = True
         
         eta = 0.0
         """
